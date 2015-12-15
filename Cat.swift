@@ -100,7 +100,6 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
         {
             if (NSURLProtocol.propertyForKey("CATProtocol", inRequest: request) != nil)
             {
-                print("reload \(request.URL)")
                 return false
             }
             return true
@@ -108,7 +107,6 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
         {
             if (NSURLProtocol.propertyForKey("CATProtocol", inRequest: request) != nil)
             {
-                print("reload2 \(request.URL)")
                 return false
             }
         }
@@ -172,8 +170,7 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
         }
 
         self.connection = NSURLConnection(request: Cat.canonicalRequestForRequest(self.request), delegate: self,startImmediately:true)
-        //super.startLoading()
-        print("startLoading  \(self.request.URL)")
+
     }
     
     override func stopLoading() {

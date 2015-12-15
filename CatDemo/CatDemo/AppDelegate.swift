@@ -19,31 +19,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
 
         
-        let api = "http://zhangxi.sinaapp.com/api/"  //return  {"name":"http:\/\/zhangxi.me","male":true}
+        let api1 = "http://zhangxi.sinaapp.com/cat/index.php"
+        //return  {"name":"http:\/\/zhangxi.me","male":true}
+        let api2 = "http://zhangxi.sinaapp.com/cat/index2.php"
+        //return  {"name":"http:\/\/zhangxi.me","description":"demo api 2"}
 
         Cat.start()
-        Cat.replace(api, withString: "{\"key\":\"I'm new json.\"}")
-       
-        //Cat.replace(api, withFileName: "demo", ofType: "json")
-        //Cat.replace(api, withURL: "http://nfe.mgt.chinaso365.com/1/card/usercarddetail?devType=1")
+        
+        
+        //Cat.replace(api1, withString: "{\"key\":\"I'm new json.\"}")
+        Cat.replace(api1, withFileName: "demo", ofType: "json")
+        //Cat.replace(api1, withURL: api2)
         //Cat.stop()
         
         
-        
-        
-        Cat.alamofire().request(.GET, api).responseJSON { (response:Response<AnyObject, NSError>) -> Void in
-         
-            print(response.debugDescription)
+        Cat.alamofire().request(.GET, api1).responseJSON { (response:Response<AnyObject, NSError>) -> Void in
+            print("replaced data with alamofire: \(response.result.value)\n")
         }
         
 
-        
 
-        let request = NSURLRequest(URL:NSURL(string: api)!)
+        let request = NSURLRequest(URL:NSURL(string: api1)!)
         if let data = try? NSURLConnection.sendSynchronousRequest(request, returningResponse: nil)
         {
             let string = NSString(data: data, encoding: NSUTF8StringEncoding)
-            print(string)
+            print("replaced data with NSURLConnection: \(string)\n")
         }
 
         
