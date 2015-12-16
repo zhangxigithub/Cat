@@ -1,26 +1,116 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="34W-I2-L0J">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
-        <scene sceneID="tne-QT-ifu">
+        <!--Alamofire-->
+        <scene sceneID="i66-kf-uBG">
             <objects>
-                <viewController id="BYZ-38-t0r" sceneMemberID="viewController">
+                <viewController title="Alamofire" id="34W-I2-L0J" customClass="DemoViewController" customModule="CatDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
-                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                        <viewControllerLayoutGuide type="top" id="sEY-Jd-Trz"/>
+                        <viewControllerLayoutGuide type="bottom" id="hcf-jN-deR"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                    <view key="view" contentMode="scaleToFill" id="H17-Kc-h63">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="If you use Alamofire , use Cat.alamofire() instead of Alamofire." translatesAutoresizingMaskIntoConstraints="NO" id="Win-x8-xoN">
+                                <rect key="frame" x="0.0" y="20" width="600" height="398"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Aur-24-JqJ">
+                                <rect key="frame" x="0.0" y="426" width="320" height="174"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="replace with string" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WHH-Lo-EsE">
+                                        <rect key="frame" x="8" y="53" width="117" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="replace with another url" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dfu-bV-EdY">
+                                        <rect key="frame" x="8" y="135" width="144" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Yhn-Nm-q0q">
+                                        <rect key="frame" x="160" y="48" width="51" height="31"/>
+                                        <connections>
+                                            <action selector="changState:" destination="34W-I2-L0J" eventType="valueChanged" id="BbK-F6-Wim"/>
+                                        </connections>
+                                    </switch>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="GkP-gZ-aoG">
+                                        <rect key="frame" x="160" y="130" width="51" height="31"/>
+                                        <connections>
+                                            <action selector="changState:" destination="34W-I2-L0J" eventType="valueChanged" id="yW7-7U-wxk"/>
+                                        </connections>
+                                    </switch>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ZPw-f7-hUG">
+                                        <rect key="frame" x="160" y="90" width="51" height="31"/>
+                                        <connections>
+                                            <action selector="changState:" destination="34W-I2-L0J" eventType="valueChanged" id="Njz-m4-RSF"/>
+                                        </connections>
+                                    </switch>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="replace with file" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qtf-RF-tUh">
+                                        <rect key="frame" x="8" y="95" width="100" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="original response" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0tF-RG-KLg">
+                                        <rect key="frame" x="8" y="14" width="117" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MVf-9X-Qjt">
+                                        <rect key="frame" x="160" y="9" width="51" height="31"/>
+                                        <connections>
+                                            <action selector="changState:" destination="34W-I2-L0J" eventType="valueChanged" id="rsi-6h-Ttb"/>
+                                        </connections>
+                                    </switch>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZzF-UC-G28">
+                                        <rect key="frame" x="217" y="8" width="87" height="154"/>
+                                        <color key="backgroundColor" red="0.90980392160000001" green="0.91372549020000005" blue="0.90980392160000001" alpha="1" colorSpace="calibratedRGB"/>
+                                        <state key="normal" title="Request"/>
+                                        <connections>
+                                            <action selector="request:" destination="34W-I2-L0J" eventType="touchUpInside" id="oEX-1F-3jx"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="174" id="211-x2-HdZ"/>
+                                    <constraint firstAttribute="width" constant="320" id="7Xi-kf-qo9"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="hcf-jN-deR" firstAttribute="top" secondItem="Aur-24-JqJ" secondAttribute="bottom" id="BUg-g0-eeQ"/>
+                            <constraint firstItem="Aur-24-JqJ" firstAttribute="top" secondItem="Win-x8-xoN" secondAttribute="bottom" constant="8" id="IGI-we-0qx"/>
+                            <constraint firstItem="Win-x8-xoN" firstAttribute="leading" secondItem="H17-Kc-h63" secondAttribute="leading" id="Wij-7R-T76"/>
+                            <constraint firstItem="Aur-24-JqJ" firstAttribute="leading" secondItem="H17-Kc-h63" secondAttribute="leading" id="czU-nH-r8j"/>
+                            <constraint firstItem="Win-x8-xoN" firstAttribute="top" secondItem="sEY-Jd-Trz" secondAttribute="bottom" id="pQY-ah-dXb"/>
+                            <constraint firstAttribute="trailing" secondItem="Win-x8-xoN" secondAttribute="trailing" id="vj4-Sc-rOl"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="content" destination="Win-x8-xoN" id="tXw-bt-lUE"/>
+                        <outlet property="s1" destination="MVf-9X-Qjt" id="ziB-2B-s4N"/>
+                        <outlet property="s2" destination="Yhn-Nm-q0q" id="sMj-Oq-We5"/>
+                        <outlet property="s3" destination="ZPw-f7-hUG" id="YER-ch-2xd"/>
+                        <outlet property="s4" destination="GkP-gZ-aoG" id="nyr-8H-FnT"/>
+                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jkI-jf-onk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="509" y="150"/>
         </scene>
     </scenes>
 </document>

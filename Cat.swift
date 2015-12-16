@@ -14,8 +14,10 @@ extension Manager {
     
     public static let cat: Manager = {
         
-        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-        configuration.protocolClasses =  [Cat.self]
+        var configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        var classes = configuration.protocolClasses
+        classes?.insert(Cat.self, atIndex: 0)
+        configuration.protocolClasses =  classes
         configuration.HTTPAdditionalHeaders = Manager.defaultHTTPHeaders
         
         return Manager(configuration: configuration)
@@ -32,7 +34,7 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
     
     class func alamofire() -> Alamofire.Manager
     {
-        if enableCat == true
+        if enableCat
         {
             return Alamofire.Manager.cat
         }else
@@ -49,6 +51,10 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
     {
         enableCat = false
         NSURLProtocol.unregisterClass(Cat)
+    }
+    class func clean()
+    {
+        urls.removeAll()
     }
     
     class func replace(origin:String,withString value:String)
@@ -84,6 +90,7 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
     
     class func item(request : NSURLRequest) -> CatItem?
     {
+
         for item in Cat.urls
         {
             if item.origin == (request.URL?.absoluteString ?? "")
@@ -96,20 +103,23 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
     
     override class func canInitWithRequest(request: NSURLRequest) -> Bool {
 
+        if Cat.enableCat == false
+        {
+            return false
+        }
+        
+        if (NSURLProtocol.propertyForKey("CATProtocol", inRequest: request) != nil)
+        {
+            return false
+        }
+        
         if item(request) != nil
         {
-            if (NSURLProtocol.propertyForKey("CATProtocol", inRequest: request) != nil)
-            {
-                return false
-            }
             return true
         }else
         {
-            if (NSURLProtocol.propertyForKey("CATProtocol", inRequest: request) != nil)
-            {
-                return false
-            }
         }
+        
         return false
     }
     
@@ -146,7 +156,7 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
                 let data     = item.value.dataUsingEncoding(NSUTF8StringEncoding)
                 let response = NSURLResponse(URL: self.request.URL!, MIMEType: "", expectedContentLength: (data?.length)!, textEncodingName: "")
                 
-                self.client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: NSURLCacheStoragePolicy.Allowed)
+                self.client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed)
                 self.client?.URLProtocol(self, didLoadData: data!)
                 self.client?.URLProtocolDidFinishLoading(self)
 
@@ -156,7 +166,7 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
                 let data     = NSData(contentsOfFile: item.value)
                 let response = NSURLResponse(URL: self.request.URL!, MIMEType: "", expectedContentLength: (data?.length)!, textEncodingName: "")
                 
-                self.client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: NSURLCacheStoragePolicy.Allowed)
+                self.client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed)
                 self.client?.URLProtocol(self, didLoadData: data!)
                 self.client?.URLProtocolDidFinishLoading(self)
                 
@@ -204,7 +214,7 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
         self.client?.URLProtocol(self, didCancelAuthenticationChallenge: challenge)
     }
     func connection(connection: NSURLConnection, didReceiveResponse response: NSURLResponse) {
-        self.client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy:NSURLCacheStoragePolicy.Allowed)
+        self.client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy:NSURLCacheStoragePolicy.NotAllowed)
     }
     func connection(connection: NSURLConnection, didReceiveData data: NSData) {
         self.client?.URLProtocol(self, didLoadData: data)
