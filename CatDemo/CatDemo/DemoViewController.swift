@@ -50,7 +50,7 @@ class DemoViewController: UIViewController {
         }
         
         if s1.on
-        {//original url
+        {//originall url
             Cat.stop()
         }
         if s2.on

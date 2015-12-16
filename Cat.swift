@@ -14,6 +14,7 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
 {
     static var enableCat = false
     static var urls      = [CatItem]()
+    static var hosts     = [CatItem]()
         
     var connection: NSURLConnection!
     
@@ -31,6 +32,19 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
     class func clean()
     {
         urls.removeAll()
+    }
+    
+    
+    
+
+    class func replaceHost(origin:String,host:String)
+    {
+        let item = CatItem()
+        item.origin = origin
+        item.type = .Host
+        item.value = host
+        
+        hosts.append(item)
     }
     
     class func replace(origin:String,withString value:String)
@@ -114,8 +128,29 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
 
                 NSURLProtocol.setProperty(NSNumber(bool: true), forKey: "CATProtocol", inRequest: newRequest )
                 return newRequest
+            default:
+                return request
             }
         }
+        
+        //replace host
+        for item in hosts
+        {
+            if item.type == .Host
+            {
+                if let URLComponents = NSURLComponents(string: request.URL?.absoluteString ?? "")
+                {
+                    if URLComponents.host == item.origin
+                    {
+                        let newRequest = request.mutableCopy() as! NSMutableURLRequest
+                        URLComponents.host = item.value
+                        newRequest.URL = URLComponents.URL
+                        return newRequest
+                    }
+                }
+            }
+        }
+        
         
         return request
     }
@@ -147,7 +182,7 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
                 self.client?.URLProtocolDidFinishLoading(self)
                 
                 return
-            case .URL:
+            case .URL,.Host:
                 
                 break
                 //self.connection = NSURLConnection(request: Cat.canonicalRequestForRequest(self.request), delegate: self,startImmediately:true)
@@ -168,7 +203,7 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
                 break
             case .File:
                 break
-            case .URL:
+            case .URL,.Host:
                 self.connection.cancel()
                 break
             }
@@ -209,6 +244,7 @@ enum CatItemType
     case String
     case File
     case URL
+    case Host
 }
 class CatItem : NSObject
 {
