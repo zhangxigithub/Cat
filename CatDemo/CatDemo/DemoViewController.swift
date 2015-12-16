@@ -17,7 +17,7 @@ class DemoViewController: UIViewController {
         
 
         //use alamofire
-        Cat.alamofire().request(.GET, api1).responseString(encoding: NSUTF8StringEncoding) { (response:Response<String, NSError>) -> Void in
+        Cat.Alamofire().request(.GET, api1).responseString(encoding: NSUTF8StringEncoding) { (response:Response<String, NSError>) -> Void in
 
             self.content.text = response.result.value
         }
@@ -41,7 +41,7 @@ class DemoViewController: UIViewController {
         
         sender.on = true
         
-        for s in [s1,s2,s3,s4]
+        for s in [s1,s2,s3,s4,s5]
         {
             if s != sender
             {
@@ -72,15 +72,22 @@ class DemoViewController: UIViewController {
             Cat.start()
             Cat.replace(api1, withURL: api2)
         }
+        if s5.on
+        {//replace host
+            Cat.clean()
+            Cat.start()
+            Cat.replaceHost("zhangxi.me", host: "zxapi.sinaapp.com")
+        }
     }
     
-    let api1 = "http://zhangxi.sinaapp.com/cat/index.php"
-    let api2 = "http://zhangxi.sinaapp.com/cat/index2.php"
+    let api1 = "http://zhangxi.me/cat/index.php"
+    let api2 = "http://zhangxi.me/cat/index2.php"
     
     @IBOutlet weak var content: UITextView!
     @IBOutlet weak var s1: UISwitch!
     @IBOutlet weak var s2: UISwitch!
     @IBOutlet weak var s3: UISwitch!
     @IBOutlet weak var s4: UISwitch!
+    @IBOutlet weak var s5: UISwitch!
     
 }

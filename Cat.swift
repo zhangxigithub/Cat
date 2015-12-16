@@ -15,7 +15,8 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
     static var enableCat = false
     static var urls      = [CatItem]()
     static var hosts     = [CatItem]()
-        
+    static var condition:((request:NSURLRequest)->Bool)?
+    
     var connection: NSURLConnection!
     
 
@@ -32,11 +33,15 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
     class func clean()
     {
         urls.removeAll()
+        hosts.removeAll()
     }
     
     
     
-
+    class func replace(condition:(request:NSURLRequest)->Bool)
+    {
+        self.condition = condition
+    }
     class func replaceHost(origin:String,host:String)
     {
         let item = CatItem()
@@ -103,12 +108,32 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
             return false
         }
         
+        
+        
+        if condition != nil
+        {
+            if condition!(request: request) == true
+            {
+                return true
+            }
+        }
         if item(request) != nil
         {
             return true
-        }else
-        {
         }
+        if hosts.isEmpty == false
+        {
+            for item in hosts
+            {
+                let host = request.URL?.host ?? ""
+                if host == item.origin
+                {
+                    return true
+                }
+            }
+        }
+        
+
         
         return false
     }

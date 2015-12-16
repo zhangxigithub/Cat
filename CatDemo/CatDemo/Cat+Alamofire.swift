@@ -25,7 +25,7 @@ extension Manager {
 
 extension Cat
 {
-    class func alamofire() -> Alamofire.Manager
+    class func Alamofire() -> Alamofire.Manager
     {
         if enableCat
         {
