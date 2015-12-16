@@ -25,14 +25,14 @@ extension Manager {
 
 extension Cat
 {
-    class func alamofire() -> Alamofire.Manager
+    class func Alamofire() -> Manager
     {
         if enableCat
         {
-            return Alamofire.Manager.cat
+            return Manager.cat
         }else
         {
-            return Alamofire.Manager.sharedInstance
+            return Manager.sharedInstance
         }
     }
 }
