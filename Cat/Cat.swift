@@ -13,9 +13,9 @@ import Foundation
 class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,NSURLSessionDelegate,NSURLSessionDataDelegate
 {
     static var enableCat = false
-    static var urls      = [CatItem]()
-    static var hosts     = [CatItem]()
-    static var condition:((request:NSURLRequest) -> NSMutableURLRequest?)?
+    
+    static var conditions = [CatCondition]()
+    
     
     var connection: NSURLConnection!
     
@@ -32,70 +32,91 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
     }
     class func clean()
     {
-        urls.removeAll()
-        hosts.removeAll()
+        conditions.removeAll()
     }
     
     
     
-    class func replace(condition:(request:NSURLRequest) -> NSMutableURLRequest?)
+    
+    class func replace(condition:(request:NSURLRequest) -> Bool , withRequest result:(request:NSURLRequest) -> NSURLRequest)
     {
-        self.condition = condition
+        let theCondition = CatCondition()
+        theCondition.condition = condition
+        theCondition.type = .Request
+        theCondition.result = result
+        
+        conditions.append(theCondition)
     }
+    
+    class func replace(condition:(request:NSURLRequest) -> Bool , withString result:(request:NSURLRequest) -> String)
+    {
+        let theCondition = CatCondition()
+        theCondition.condition = condition
+        theCondition.type = .String
+        theCondition.result = result
+        
+        conditions.append(theCondition)
+    }
+    
+    class func replace(condition:(request:NSURLRequest) -> Bool , withFilePath result:(request:NSURLRequest) -> String)
+    {
+        let theCondition = CatCondition()
+        theCondition.condition = condition
+        theCondition.type = .File
+        theCondition.result = result
+        
+        conditions.append(theCondition)
+    }
+    
     class func replaceHost(origin:String,host:String)
     {
-        let item = CatItem()
-        item.origin = origin
-        item.type = .Host
-        item.value = host
+        let theCondition = CatCondition()
+        theCondition.type = .Request
+        conditions.append(theCondition)
         
-        hosts.append(item)
-    }
-
-    
-    class func replace(origin:String,withString value:String)
-    {
-        replace(origin, type: CatItemType.String, value: value)
-    }
-    
-    class func replace(origin:String,withFileName value:String,ofType type:String)
-    {
-        if let path = NSBundle.mainBundle().pathForResource(value, ofType: type)
-        {
-            replace(origin, type: CatItemType.File, value: path)
+        
+        
+        theCondition.condition = {(request) -> Bool in
+            
+            if let URLComponents = NSURLComponents(string: request.URL?.absoluteString ?? "")
+            {
+                if URLComponents.host == origin
+                {
+                    return true
+                }
+            }
+            return false
+        }
+        
+        theCondition.result = {(request) -> NSURLRequest in
+            
+            if let URLComponents = NSURLComponents(string: request.URL?.absoluteString ?? "")
+            {
+                if URLComponents.host == origin
+                {
+                    let newRequest = request.mutableCopy() as! NSMutableURLRequest
+                    URLComponents.host = host
+                    newRequest.URL = URLComponents.URL
+                    return newRequest
+                }
+            }
+            return NSURLRequest()
         }
     }
     
-    class func replace(origin:String,withURL value:String)
-    {
-        replace(origin, type: CatItemType.URL, value: value)
-    }
     
-    private class func replace(origin:String,type:CatItemType,value:String)
+    private class func findCondition(request : NSURLRequest) -> CatCondition?
     {
-        let item = CatItem()
-        item.origin = origin
-        item.type = type
-        item.value = value
-
-        urls.append(item)
-        
-
-    }
-    
-    
-    class func item(request : NSURLRequest) -> CatItem?
-    {
-
-        for item in Cat.urls
+        for condition in conditions
         {
-            if item.origin == (request.URL?.absoluteString ?? "")
+            if condition.condition(request:request) == true
             {
-                return item
+                return condition
             }
         }
         return nil
     }
+    
     
     override class func canInitWithRequest(request: NSURLRequest) -> Bool {
 
@@ -109,29 +130,9 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
             return false
         }
         
-        
-        
-        if condition != nil
-        {
-            if condition!(request: request) == true
-            {
-                return true
-            }
-        }
-        if item(request) != nil
+        if let _ = Cat.findCondition(request)
         {
             return true
-        }
-        if hosts.isEmpty == false
-        {
-            for item in hosts
-            {
-                let host = request.URL?.host ?? ""
-                if host == item.origin
-                {
-                    return true
-                }
-            }
         }
         
 
@@ -142,73 +143,52 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
     override class func canonicalRequestForRequest(request: NSURLRequest) -> NSURLRequest {
         
         
-        if let r = condition?(request:request)
+        if let condition = Cat.findCondition(request)
         {
-            NSURLProtocol.setProperty(NSNumber(bool: true), forKey: "CATProtocol", inRequest: r )
-            return r
-        }
-        
-        if let item = item(request)
-        {
-            switch item.type!
+            switch condition.type!
             {
+            case .Request:
+                
+                let newRequest        = condition.result(request:request) as! NSURLRequest
+                let newMutableRequest = newRequest.mutableCopy() as! NSMutableURLRequest
+                NSURLProtocol.setProperty(NSNumber(bool: true), forKey: "CATProtocol", inRequest: newMutableRequest)
+                return newMutableRequest
+                
             case .String:
-                return request
+                break
             case .File:
-                return request
-            case .URL:
-                let newRequest = request.mutableCopy() as! NSMutableURLRequest
-                newRequest.URL = NSURL(string: item.value)
-
-                NSURLProtocol.setProperty(NSNumber(bool: true), forKey: "CATProtocol", inRequest: newRequest )
-                return newRequest
+                break
             default:
-                return request
+                break
             }
         }
         
-        //replace host
-        for item in hosts
-        {
-            if item.type == .Host
-            {
-                if let URLComponents = NSURLComponents(string: request.URL?.absoluteString ?? "")
-                {
-                    if URLComponents.host == item.origin
-                    {
-                        let newRequest = request.mutableCopy() as! NSMutableURLRequest
-                        URLComponents.host = item.value
-                        newRequest.URL = URLComponents.URL
-                        return newRequest
-                    }
-                }
-            }
-        }
-        
-        
+
         return request
     }
     
     
     override func startLoading() {
         
-        if let item = Cat.item(request)
+        if let condition = Cat.findCondition(request)
         {
-            switch item.type!
+            switch condition.type!
             {
+            case .Request:
+                break
             case .String:
-
-                let data     = item.value.dataUsingEncoding(NSUTF8StringEncoding)
+                let string   = condition.result(request:request) as! String
+                let data     = string.dataUsingEncoding(NSUTF8StringEncoding)
                 let response = NSURLResponse(URL: self.request.URL!, MIMEType: "", expectedContentLength: (data?.length)!, textEncodingName: "")
                 
                 self.client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed)
                 self.client?.URLProtocol(self, didLoadData: data!)
                 self.client?.URLProtocolDidFinishLoading(self)
-
+                
                 return
             case .File:
-            
-                let data     = NSData(contentsOfFile: item.value)
+                let path     = condition.result(request:request) as! String
+                let data     = NSData(contentsOfFile: path)
                 let response = NSURLResponse(URL: self.request.URL!, MIMEType: "", expectedContentLength: (data?.length)!, textEncodingName: "")
                 
                 self.client?.URLProtocol(self, didReceiveResponse: response, cacheStoragePolicy: NSURLCacheStoragePolicy.NotAllowed)
@@ -216,29 +196,24 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
                 self.client?.URLProtocolDidFinishLoading(self)
                 
                 return
-            case .URL,.Host,.Character:
-                
+            default:
                 break
-                //self.connection = NSURLConnection(request: Cat.canonicalRequestForRequest(self.request), delegate: self,startImmediately:true)
-                //self.client?.urlp
             }
         }
 
         self.connection = NSURLConnection(request: Cat.canonicalRequestForRequest(self.request), delegate: self,startImmediately:true)
-
+        
     }
     
     override func stopLoading() {
-        if let item = Cat.item(request)
+        
+        if let condition = Cat.findCondition(request)
         {
-            switch item.type!
+            switch condition.type!
             {
-            case .String:
-                break
-            case .File:
-                break
-            case .URL,.Host,.Character:
+            case .Request:
                 self.connection.cancel()
+            default:
                 break
             }
         }
@@ -273,18 +248,16 @@ class Cat : NSURLProtocol,NSURLConnectionDelegate, NSURLConnectionDataDelegate,N
 
 }
 
-enum CatItemType
+enum CatConditionType
 {
     case String
     case File
-    case URL
-    case Host
-    case Character
+    case Request
 }
-class CatItem : NSObject
+
+class CatCondition : NSObject
 {
-    var origin:String!
-    var type:CatItemType!
-    var value:String!
-    
+    var condition:((request:NSURLRequest) -> Bool)!
+    var result:((request:NSURLRequest) -> Any)!
+    var type:CatConditionType!
 }

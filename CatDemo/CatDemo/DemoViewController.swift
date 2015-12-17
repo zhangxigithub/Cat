@@ -17,16 +17,7 @@ class DemoViewController: UIViewController {
         
 
         Cat.start()
-        Cat.replace { (request) -> NSMutableURLRequest? in
-            
-            print("xxx......\(request.URL)")
-            if let newRequest = request.mutableCopy() as? NSMutableURLRequest
-            {
 
-            }
-            
-            return nil
-        }
     }
     
     @IBAction func request(sender: AnyObject) {
@@ -73,20 +64,44 @@ class DemoViewController: UIViewController {
         {//replace by string
             Cat.clean()
             Cat.start()
-            Cat.replace(api1, withString:"I'm string replaced by Cat.")
+            Cat.replace({ (request) -> Bool in
+                
+                return request.URL?.absoluteString == self.api1
+            
+                }, withString: { (request) -> String in
+                    
+                    return "I'm string replaced by Cat[condition]."
+            })
+
         }
         if s3.on
         {//replace by content of file
             Cat.clean()
             Cat.start()
-            Cat.replace(api1, withFileName: "demo", ofType: "json")
+            Cat.replace({ (request) -> Bool in
+                
+                (request.URL?.absoluteString ?? "").containsString("zhangxi.me")
+                
+                }, withFilePath: { (request) -> String in
+                    
+                    return NSBundle.mainBundle().pathForResource("demo", ofType: "json")!
+             })
 
         }
         if s4.on
         {//replace by another url
             Cat.clean()
             Cat.start()
-            Cat.replace(api1, withURL: api2)
+            
+            Cat.replace({ (request) -> Bool in
+                
+                return (request.URL?.absoluteString)! == self.api1
+                
+                }, withRequest: { (request) -> NSURLRequest in
+                    
+                    return NSURLRequest(URL: NSURL(string: self.api2)!)
+            })
+            
         }
         if s5.on
         {//replace host

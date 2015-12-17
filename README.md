@@ -23,21 +23,59 @@ Cat.Alamofire().request(.GET, api1).responseString(encoding: NSUTF8StringEncodin
 
 ```swift
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    
         Cat.start() 
+        Cat.replace.......
         
         return true
     }
 ```
 #### 使用
+提供三种基本功能，把返回结果替换成本地文件、字符串、或其他URL
 
-1. 基础功能，简单替换URL为本地文件、字符串、或其他URL
+
+1.替换成字符串
+
 ```swift
-Cat.replace("http://.....", withString:"I'm string replaced by Cat.") //返回值变成I'm string replaced by Cat.
-Cat.replace("http://.....", withFileName: "demo", ofType: "json") //返回值变成demo.json中的内容
-Cat.replace("http://111.com", withURL: "http://222.com") //请求地址由http://111.com 变成http://222.com
+Cat.replace({ (request) -> Bool in
+    //当返回true时，表示改request需要替换
+    return true/false
+
+    }, withString: { (request) -> String in
+        //返回替换之后的字符串
+        return "I'm string replaced by Cat[condition]."
+})
 ```
 
-2. 替换host
+2.替换成本地文件的内容
+
+```swift
+Cat.replace({ (request) -> Bool in
+    //当返回true时，表示改request需要替换
+    return true/false
+
+    }, withFile: { (request) -> String in
+        //返回本地文件的路径
+        return NSBundle.mainBundle().pathForResource("demo", ofType: "json")!
+})
+```
+
+3.替换成其他请求,可以自由修改URL或者参数
+
+```swift
+Cat.replace({ (request) -> Bool in
+    //当返回true时，表示改request需要替换
+    return true/false
+
+    }, withRequest: { (request) -> String in
+        //返回新的NSURLRequest
+        return NSURLRequest(URL: NSURL(string: self.api2)!)
+})
+```
+
+
+还有一些特殊替换
+1.替换host
 ```swift
 Cat.replaceHost("zhangxi.me", host: "zxapi.sinaapp.com")
 原始请求 http://zhangxi.me/api.json 会变成请求 http://zxapi.sinaapp.com/api.json
