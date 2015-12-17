@@ -12,6 +12,22 @@ import Alamofire
 class DemoViewController: UIViewController {
 
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+
+        Cat.start()
+        Cat.replace { (request) -> NSMutableURLRequest? in
+            
+            print("xxx......\(request.URL)")
+            if let newRequest = request.mutableCopy() as? NSMutableURLRequest
+            {
+
+            }
+            
+            return nil
+        }
+    }
     
     @IBAction func request(sender: AnyObject) {
         
